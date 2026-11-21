@@ -15,3 +15,9 @@ jobs:
     runs-on: ubuntu-latest
     container: ps2dev/ps2dev:latest
     steps:
+      - uses: actions/checkout@v4
+      - name: Install Python deps
+        run: apk add --no-cache make python3 py3-pillow || (apt-get update && apt-get install -y make python3 python3-pil)
+      - name: Find project dir
+        run: |
+          M=$(find . -maxdepth 2 -name Makefile -not -path './tests/*' -not -path '*/tests/*' | head
