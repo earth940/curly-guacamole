@@ -21,7 +21,8 @@ jobs:
         run: apk add --no-cache make python3 py3-pillow || (apt-get update && apt-get install -y make python3 python3-pil)
       - name: Find project dir
         run: |
-          find . -maxdepth 2 -name Makefile -not -path '*/tests/*' > /tmp/mk.txt
+          find . -not -path './.git/*' -type f | head -40
+          find . -name Makefile -not -path './.git/*' -not -path '*/tests/*' > /tmp/mk.txt
           read -r M < /tmp/mk.txt
           echo "APP_DIR=${M%/*}" >> "$GITHUB_ENV"
       - name: Build
