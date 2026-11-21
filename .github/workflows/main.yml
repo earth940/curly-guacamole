@@ -5,11 +5,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Find project dir
+      - name: Find tests dir
         run: |
-          D=$(dirname "$(find . -path ./.git -prune -o -name test_menu.c -print | head -n1)")/..
-          echo "APP_DIR=$(realpath "$D")" >> "$GITHUB_ENV"
-      - run: make -C "$APP_DIR/tests"
+          find . -name test_menu.c > /tmp/tt.txt
+          read -r T < /tmp/tt.txt
+          echo "TEST_DIR=${T%/*}" >> "$GITHUB_ENV"
+      - run: make -C "$TEST_DIR"
 
   build:
     runs-on: ubuntu-latest
@@ -20,4 +21,14 @@ jobs:
         run: apk add --no-cache make python3 py3-pillow || (apt-get update && apt-get install -y make python3 python3-pil)
       - name: Find project dir
         run: |
-          M=$(find . -maxdepth 2 -name Makefile -not -path './tests/*' -not -path '*/tests/*' | head
+          find . -maxdepth 2 -name Makefile -not -path '*/tests/*' > /tmp/mk.txt
+          read -r M < /tmp/mk.txt
+          echo "APP_DIR=${M%/*}" >> "$GITHUB_ENV"
+      - name: Build
+        run: make -C "$APP_DIR"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: chickengun-elf
+          path: |
+            chickengun.elf
+            **/chickengun.elf
