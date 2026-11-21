@@ -1,0 +1,11 @@
+CC ?= gcc
+CFLAGS = -Wall -Wextra -std=c99
+
+test: test_menu
+	./test_menu
+
+test_menu: test_menu.c ../src/menu.c
+	$(CC) $(CFLAGS) -o $@ test_menu.c ../src/menu.c
+
+clean:
+	rm -f test_menu
