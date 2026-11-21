@@ -1,0 +1,21 @@
+name: Build PS2 ELF
+on: [push, workflow_dispatch]
+jobs:
+  host-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: make -C tests
+  build:
+    runs-on: ubuntu-latest
+    container: ps2dev/ps2dev:latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Python deps
+        run: apk add --no-cache python3 py3-pillow || (apt-get update && apt-get install -y python3 python3-pil)
+      - name: Build
+        run: make
+      - uses: actions/upload-artifact@v4
+        with:
+          name: chickengun-elf
+          path: chickengun.elf
