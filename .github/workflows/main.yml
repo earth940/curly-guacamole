@@ -5,12 +5,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Find tests dir
+      - name: Unpack sources
         run: |
-          find . -name test_menu.c > /tmp/tt.txt
-          read -r T < /tmp/tt.txt
-          echo "TEST_DIR=${T%/*}" >> "$GITHUB_ENV"
-      - run: make -C "$TEST_DIR"
+          python3 -m zipfile -e chickengun-ps2-menu.zip .
+          cp tests_Makefile chicken-ps2/tests/Makefile
+      - run: make -C chicken-ps2/tests
 
   build:
     runs-on: ubuntu-latest
@@ -19,17 +18,11 @@ jobs:
       - uses: actions/checkout@v4
       - name: Install Python deps
         run: apk add --no-cache make python3 py3-pillow || (apt-get update && apt-get install -y make python3 python3-pil)
-      - name: Find project dir
-        run: |
-          find . -not -path './.git/*' -type f | head -40
-          find . -name Makefile -not -path './.git/*' -not -path '*/tests/*' > /tmp/mk.txt
-          read -r M < /tmp/mk.txt
-          echo "APP_DIR=${M%/*}" >> "$GITHUB_ENV"
+      - name: Unpack sources
+        run: python3 -m zipfile -e chickengun-ps2-menu.zip .
       - name: Build
-        run: make -C "$APP_DIR"
+        run: make -C chicken-ps2
       - uses: actions/upload-artifact@v4
         with:
           name: chickengun-elf
-          path: |
-            chickengun.elf
-            **/chickengun.elf
+          path: chicken-ps2/chickengun.elf
