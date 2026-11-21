@@ -19,3 +19,4 @@ jobs:
         with:
           name: chickengun-elf
           path: chickengun.elf
+          working-directory: chicken-ps2-cpp
